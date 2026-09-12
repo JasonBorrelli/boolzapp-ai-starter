@@ -22,17 +22,19 @@ const messages = [
     }
 ]
 
-console.table(messages);
+/* console.table(messages); */
 
 
 //SETUP
+const endpoint = geminiConfig.endPoint + '?key=' + geminiConfig.apiKey;
+console.log(endpoint);
 
 
 //RENDERING MESSAGGI ////////////////////////////////////
 renderMessages();
 
 //AGGIUNGI NUOVO MESSAGGIO //////////////////////////////////
-chatFormEl.addEventListener('submit', function (e) {                  //  event listener submit
+chatFormEl.addEventListener('submit', async function (e) {                  //  event listener submit
     e.preventDefault()                                               //  impedisce refresh pagina
 
     //LETTURA DATI USER
@@ -52,6 +54,50 @@ chatFormEl.addEventListener('submit', function (e) {                  //  event 
 
     //SCROLL IN FONDO
     chatBoxEl.scrollTop = chatBoxEl.scrollHeight;                   //  scorrimento automatico in fondo
+
+    // INTEGRAZIONE GEMINI AI///////////////////////////////
+    //1 conversione dati nel formato richiesto dalla api
+    const formattedMessages = messages.map((message) => {
+        return {
+            role: message.type === 'sent' ? 'user' : 'model',
+            parts: [{ text: message.text }]
+        }
+    });
+
+    formattedMessages.unshift({
+        role: 'user',
+        parts: [{ text: geminiConfig.systemPrompt }],
+
+    });
+
+
+    console.log(messages);
+    console.table(formattedMessages);
+
+    //CALL AJAX
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        body: JSON.stringify({ contents: formattedMessages }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const data = await response.json();
+    console.log(data);
+    const aiMessage = data.candidates[0].content.parts[0].text;
+    console.log(aiMessage);
+
+    addNewMessage(aiMessage, 'received');
+    renderMessages();
+    chatBoxEl.scrollTop = chatBoxEl.scrollHeight;
+
+
+
+
+
+
+
 });
 
 
