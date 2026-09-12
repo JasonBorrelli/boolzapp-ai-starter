@@ -10,16 +10,7 @@ const chatInputEl = chatFormEl.querySelector('input');                      // c
 
 // HISTORY
 const messages = [
-    {
-        text: 'ciao, come stai?',                   // messagio inviato
-        time: '12/09/2026 17:00:00',
-        type: 'sent',
-    },
-    {
-        text: 'tutto bene e tu?',                   // messagio ricevuto
-        time: '12/09/2026 17:10:00',
-        type: 'received',
-    }
+
 ]
 
 /* console.table(messages); */
